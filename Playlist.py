@@ -1,4 +1,5 @@
-from Musica import Musica, reproduzir_musica_com_api, tempo_em_segundos
+from Musica import Musica
+from api import tempo_em_segundos, reproduzir_musica_com_api_thread
 from Catalogo import Catalogo
 import time
 
@@ -69,12 +70,15 @@ class Playlist:
             print("Playlist está vazia!")
         else:
             for music in self.musicas:
-                reproduzir_musica_com_api(music.titulo, music.artista)
+                reproduzir_musica_com_api_thread(music.titulo, music.artista)
                 tempo_duracao = tempo_em_segundos(music.duracao)
                 print(f"Aguardando {tempo_duracao} segundos para a próxima música...")
                 time.sleep(tempo_duracao)
 
     def buscar_musicas(self, criterio, valor):
+        if criterio not in ['titulo', 'artista', 'duracao']:
+            print("Critério inválido. Use 'titulo', 'artista' ou 'duracao'.")
+            return
         resultados = []
         for musica in self.musicas:
             if getattr(musica, criterio).lower() == valor.lower():

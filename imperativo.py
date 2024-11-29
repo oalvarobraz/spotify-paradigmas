@@ -1,5 +1,9 @@
-from api import reproduzir_musica_com_api, tempo_em_segundos
+from api import reproduzir_musica_com_api_thread, tempo_em_segundos
+import threading
+from queue import Queue
 import time
+
+queue = Queue()
 
 
 catalago = [
@@ -94,14 +98,23 @@ def reproduzir_playlist_api(nome_playlist):
         return
 
     for musica in playlists[nome_playlist]:
-        titulo = musica['Titulo']
-        artista = musica['Artista']
-        duracao = musica['Duracao']
+        queue.put(musica)
 
-        reproduzir_musica_com_api(titulo, artista)
-        tempo_duracao = tempo_em_segundos(duracao)
-        print(f"Aguardando {tempo_duracao} segundos para a próxima música...")
-        time.sleep(tempo_duracao)
+    def tocar_da_fila():
+        while not queue.empty():
+            musica = queue.get()
+            titulo = musica['Titulo']
+            artista = musica['Artista']
+            duracao = musica['Duracao']
+            print(f"Tocando agora: {titulo} - {artista}")
+            reproduzir_musica_com_api_thread(titulo, artista)
+
+            tempo_duracao = tempo_em_segundos(duracao)
+            print(f"Aguardando {tempo_duracao} segundos para a próxima música...")
+            time.sleep(tempo_duracao)
+            queue.task_done()
+
+    threading.Thread(target=tocar_da_fila).start()
 
 
 def mostrar_playlist(nome_playlist):
@@ -149,7 +162,7 @@ def buscar_musica_playlist(nome_playlist, criterio, valor):
         resposta = input("Deseja todas a(s) musica(s)? (Sim/Não)\n")
         if resposta.lower() == 'sim' or resposta.lower() == 's' or resposta.lower() == 'y' or resposta.lower() == 'yes':
             for musica in resultados:
-                reproduzir_musica_com_api(musica['Titulo'], musica['Artista'])
+                reproduzir_musica_com_api_thread(musica['Titulo'], musica['Artista'])
     else:
         print("Nenhuma música encontrada.")
 
@@ -188,7 +201,7 @@ while True:
         adicionar_musica(titulo, artista, duracao)
     elif opcao == "3":
         nome_playlist = input("Nome da playlist: ")
-        if nome_playlist not in playlists[nome_playlist]:
+        if nome_playlist not in playlists:
             criar_playlist(nome_playlist)
         else:
             print("Playlist já existe.")
@@ -235,7 +248,7 @@ while True:
         cod = int(input("Número da música: "))
         musica = buscar_musica_por_id(cod)
         if musica is not None:
-            reproduzir_musica_com_api(musica['Titulo'], musica['Artista'])
+            reproduzir_musica_com_api_thread(musica['Titulo'], musica['Artista'])
         else:
             print("Número não pertence ao catálogo. Tente novamente.")
     elif opcao == "11":

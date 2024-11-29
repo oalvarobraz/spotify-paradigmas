@@ -1,6 +1,3 @@
-from api import reproduzir_musica_com_api, tempo_em_segundos
-
-
 class Musica:
     def __init__(self, titulo: str, artista: str, duracao: str):
         self._titulo = titulo
