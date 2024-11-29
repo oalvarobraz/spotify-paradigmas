@@ -28,7 +28,7 @@
 3. **Instalação das Dependências**  
    Certifique-se de ter o `pip` configurado e execute o seguinte comando para instalar as dependências:  
    ```
-   pip install python-dotenv spotipy threading
+   pip install python-dotenv spotipy threading time
    ```
 
 ## Uso do Programa
