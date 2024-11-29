@@ -1,5 +1,5 @@
-from Musica import Musica, reproduzir_musica_com_api, tempo_em_segundos
-import time
+from Musica import Musica
+from api import reproduzir_musica_com_api_thread, tempo_em_segundos
 
 
 class Catalogo:
@@ -45,16 +45,14 @@ class Catalogo:
     @staticmethod
     def reproduzir_musica_api(musica: Musica):
         if musica in Catalogo.catalogo:
-            reproduzir_musica_com_api(musica.titulo, musica.artista)
-            tempo_duracao = tempo_em_segundos(musica.duracao)
-            print(f"Aguardando {tempo_duracao} segundos para a próxima música...")
-            time.sleep(tempo_duracao)
+            reproduzir_musica_com_api_thread(musica.titulo, musica.artista)
         else:
             print("Música não encontrada no catálogo.")
 
     @staticmethod
     def buscar_musicas(criterio, valor):
-        resultados = [musica for musica in Catalogo.get_catalogo() if getattr(musica, criterio, "").lower() == valor.lower()]
+        resultados = [musica for musica in Catalogo.get_catalogo() if
+                      getattr(musica, criterio, "").lower() == valor.lower()]
         if resultados:
             print("Resultados encontrados:")
             for musica in resultados:
