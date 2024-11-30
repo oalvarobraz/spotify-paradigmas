@@ -15,13 +15,20 @@ class Catalogo:
             print("O catálogo está vazio.")
         else:
             print("\n=== Músicas disponíveis ===")
-            for idx, musica in enumerate(Catalogo.catalogo):
-                print(f"{idx + 1}. {musica.titulo} - {musica.artista} ({musica.duracao})")
+            for musica in Catalogo.catalogo:
+                print(f"{musica.cod}. {musica.titulo} - {musica.artista} ({musica.duracao})")
             print("=============================")
+
+    @staticmethod
+    def buscar_maior_id():
+        return max((musica.cod for musica in Catalogo.catalogo), default=0)
 
     @staticmethod
     def adicionar_musica(musica: Musica):
         if musica not in Catalogo.catalogo:
+            if musica.cod == -1:
+                novo_cod = Catalogo.buscar_maior_id() + 1
+                musica.cod = novo_cod
             Catalogo.catalogo.append(musica)
             print(f"Música '{musica.titulo}' adicionada ao catálogo.")
         else:
@@ -70,3 +77,10 @@ class Catalogo:
         for musica in Catalogo.get_catalogo():
             if musica.titulo.lower() == titulo.lower() and musica.artista.lower() == artista.lower():
                 return musica
+
+    @staticmethod
+    def buscar_musica_por_id(cod):
+        for musica in Catalogo.get_catalogo():
+            if musica.cod == cod:
+                return musica
+        return None
